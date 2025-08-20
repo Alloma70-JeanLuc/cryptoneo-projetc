@@ -9,7 +9,7 @@ quarkus:
 
   http:
     host: 0.0.0.0
-    port: 8080   # Port standard pour dev
+    port: 8080
 
   datasource:
     db-kind: postgresql
@@ -18,16 +18,21 @@ quarkus:
     jdbc:
       url: jdbc:postgresql://localhost:5432/cryptodb
 
+  # MODIFICATION 1: GESTION DU SCHÉMA DE BASE DE DONNÉES
+  # On passe à 'drop-and-create' pour que Quarkus crée les tables au démarrage.
+  # Ceci résout l'erreur "missing table [accounts]".
+  # ATTENTION: Ceci est pour le développement uniquement, car cela supprime toutes les données à chaque redémarrage.
   hibernate-orm:
     database:
-      generation: none
+      generation: drop-and-create
     log:
       sql: true
 
+  # On désactive Liquibase temporairement pour laisser Hibernate gérer la BDD en mode dev.
   liquibase:
-    migrate-at-start: true
-    change-log: db/changelog.xml
-    baseline-on-migrate: true
+    migrate-at-start: false
+    # change-log: db/changelog.xml # Désactivé pour le moment
+    # baseline-on-migrate: true
 
   jvm:
     args: "--add-opens=java.base/java.lang=ALL-UNNAMED"
@@ -49,7 +54,7 @@ quarkus:
     enable: true
 
   devservices:
-    enabled: false # On le laisse désactivé comme tu le souhaites
+    enabled: false
 
   kubernetes:
     part-of: crypto-k8s
@@ -74,19 +79,18 @@ quarkus:
 greeting:
   message: hello
 
-# JWT Verification
 mp:
   jwt:
     verify:
       publickey:
-        location: resources/publicKey.pem
+        location: classpath:publicKey.pem
 
-# JWT Signing Key
 smallrye:
   jwt:
     sign:
       key:
-        location: resources/privateKey.pem
+        location: classpath:privateKey.pem
+
 
 # Upload Directories
 upload:
@@ -94,8 +98,7 @@ upload:
   files_dir: /files
   template: /template
 
-
-# Application Crypto (équivalent de mon_barra)
+# Application Crypto
 crypto:
   name: CRYPTO
   paystack_secret_key: sk_test_a870c3e9bb1ceaed9c0355a94c5ac0f116c88e74

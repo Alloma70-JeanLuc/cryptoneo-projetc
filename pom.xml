@@ -48,6 +48,58 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-config-yaml</artifactId>
+        </dependency>
+        <!-- ============== COUCHE WEB & API ============== -->
+        <!-- Pour les endpoints REST et la sérialisation JSON (corrige les erreurs Jackson) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+        <!-- Pour la documentation OpenAPI/Swagger (corrige les erreurs @Operation, @APIResponse) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
+
+        <!-- ============== COUCHE DONNÉES & PERSISTANCE ============== -->
+        <!-- Pour utiliser Panache avec Hibernate ORM (corrige PanacheEntity, PanacheRepository, @Entity, etc.) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-orm-panache</artifactId>
+        </dependency>
+        <!-- Le driver pour se connecter à ta base de données PostgreSQL -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jdbc-postgresql</artifactId>
+        </dependency>
+
+        <!-- ============== VALIDATION ============== -->
+        <!-- Pour la validation des données (@NotBlank, @Email, @Valid, etc.) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-hibernate-validator</artifactId>
+        </dependency>
+
+        <!-- ============== DÉPENDANCE EXTERNE ============== -->
+        <!-- Pour la librairie org.json.simple que tu utilises dans CrudEndPointImpl -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>
