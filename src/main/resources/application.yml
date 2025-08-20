@@ -1,0 +1,104 @@
+# =======================================
+# Configuration de l'Application Quarkus (Crypto)
+# =======================================
+
+quarkus:
+  application:
+    name: project-crypto
+    version: 1.0.0-SNAPSHOT
+
+  http:
+    host: 0.0.0.0
+    port: 8080   # Port standard pour dev
+
+  datasource:
+    db-kind: postgresql
+    username: postgres
+    password: alloma
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/cryptodb
+
+  hibernate-orm:
+    database:
+      generation: none
+    log:
+      sql: true
+
+  liquibase:
+    migrate-at-start: true
+    change-log: db/changelog.xml
+    baseline-on-migrate: true
+
+  jvm:
+    args: "--add-opens=java.base/java.lang=ALL-UNNAMED"
+
+  mailer:
+    from: support@crypto.com
+    host: smtp.hostinger.com
+    username: support@crypto.com
+    password: j9n9$xf4GP!+2YE
+    mock: false
+    port: 587
+
+  swagger-ui:
+    path: /documentation
+    always-include: true
+    theme: outline
+    title: CRYPTO API
+    footer: "2025 . CRYPTO"
+    enable: true
+
+  devservices:
+    enabled: false # On le laisse désactivé comme tu le souhaites
+
+  kubernetes:
+    part-of: crypto-k8s
+    image-pull-policy: never
+    service-type: node-port
+    node-port: 30011
+    replicas: 3
+    pvc-volumes:
+      task-pv-storage:
+        claim-name: task-pv-claim
+    mounts:
+      taskpvstorage:
+        path: /home/dev1/crypto/jar
+
+  container-image:
+    registry: ""
+    group: ""
+    name: crypto-k8s
+    tag: 1.0
+
+# Greeting
+greeting:
+  message: hello
+
+# JWT Verification
+mp:
+  jwt:
+    verify:
+      publickey:
+        location: resources/publicKey.pem
+
+# JWT Signing Key
+smallrye:
+  jwt:
+    sign:
+      key:
+        location: resources/privateKey.pem
+
+# Upload Directories
+upload:
+  base-dir: /tmp/crypto-files
+  files_dir: /files
+  template: /template
+
+
+# Application Crypto (équivalent de mon_barra)
+crypto:
+  name: CRYPTO
+  paystack_secret_key: sk_test_a870c3e9bb1ceaed9c0355a94c5ac0f116c88e74
+  paystack_public_key: pk_test_da8f16bc70e61520fee8cf7c8d586523503084c7
+  paystack_callback_url: http://localhost:4200/payment-callback?email={customer_email}
+  paystack_webhook_url: http://localhost:8080/payment/webhook/
