@@ -77,6 +77,7 @@ greeting:
 mp:
   jwt:
     verify:
+      issuer: crypto-app
       publickey:
         location: classpath:publicKey.pem
 
@@ -85,6 +86,10 @@ smallrye:
     sign:
       key:
         location: classpath:privateKey.pem
+
+
+
+
 
 # Upload Directories
 upload:

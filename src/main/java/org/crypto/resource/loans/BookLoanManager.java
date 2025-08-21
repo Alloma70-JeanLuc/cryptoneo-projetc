@@ -1,5 +1,6 @@
 package org.crypto.resource.loans;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.POST;
@@ -11,6 +12,7 @@ import org.crypto.db.entities.BookLoan;
 import org.crypto.db.entities.Librarian;
 import org.crypto.db.repositories.BookLoanRepository;
 
+@RolesAllowed({"ADMIN","LIBRARIAN", "MEMBER"})
 @Path("/loans")
 public class BookLoanManager extends CrudEndPointImpl<BookLoan> {
 

@@ -12,7 +12,7 @@ import org.crypto.db.repositories.BookRepository;
 
 import java.util.Optional;
 
-@RolesAllowed({"ADMIN","LIBRARIAN"})
+@RolesAllowed({"ADMIN","LIBRARIAN", "AUTHOR"})
 @Path("/books")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
