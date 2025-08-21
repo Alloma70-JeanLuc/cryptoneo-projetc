@@ -14,7 +14,4 @@ public class City extends PanacheEntityBase {
     @Column(nullable = false, unique = true)
     public String name;
 
-    // Optionnel : relation inverse si tu veux lister tous les auteurs d'une ville
-    // @OneToMany(mappedBy = "city")
-    // public List<Author> authors;
 }

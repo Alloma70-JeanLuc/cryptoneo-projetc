@@ -18,21 +18,16 @@ quarkus:
     jdbc:
       url: jdbc:postgresql://localhost:5432/cryptodb
 
-  # MODIFICATION 1: GESTION DU SCHÉMA DE BASE DE DONNÉES
-  # On passe à 'drop-and-create' pour que Quarkus crée les tables au démarrage.
-  # Ceci résout l'erreur "missing table [accounts]".
-  # ATTENTION: Ceci est pour le développement uniquement, car cela supprime toutes les données à chaque redémarrage.
   hibernate-orm:
     database:
-      generation: drop-and-create
+      generation: update   # ⚡ Création/MAJ automatique des tables
     log:
-      sql: true
+      sql: true           # pour voir le SQL généré (optionnel)
 
-  # On désactive Liquibase temporairement pour laisser Hibernate gérer la BDD en mode dev.
   liquibase:
     migrate-at-start: false
-    # change-log: db/changelog.xml # Désactivé pour le moment
-    # baseline-on-migrate: true
+    change-log: db/changelog.xml
+    baseline-on-migrate: true
 
   jvm:
     args: "--add-opens=java.base/java.lang=ALL-UNNAMED"
@@ -90,7 +85,6 @@ smallrye:
     sign:
       key:
         location: classpath:privateKey.pem
-
 
 # Upload Directories
 upload:

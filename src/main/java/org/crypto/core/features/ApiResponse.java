@@ -66,4 +66,22 @@ public class ApiResponse<T> implements Serializable {
     public static <T> Response build(Response.Status status, ApiResponse<T> apiResponse) {
         return Response.status(status).entity(apiResponse).build();
     }
+
+    public static <T> ApiResponse<T> success(T data, String message) {
+        return new ApiResponse<>(Response.Status.OK.getStatusCode(), message, data);
+    }
+
+    /**
+     * Crée une réponse pour une ressource non trouvée (404 Not Found).
+     */
+    public static <T> ApiResponse<T> notFound(String message) {
+        return new ApiResponse<>(Response.Status.NOT_FOUND.getStatusCode(), message, null);
+    }
+
+    /**
+     * Crée une réponse pour une erreur interne du serveur (500 Internal Server Error).
+     */
+    public static <T> ApiResponse<T> error(String message) {
+        return new ApiResponse<>(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), message, null);
+    }
 }

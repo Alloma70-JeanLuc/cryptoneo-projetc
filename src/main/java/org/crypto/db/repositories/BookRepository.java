@@ -5,15 +5,20 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.crypto.db.entities.Book;
 
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class BookRepository implements PanacheRepository<Book> {
-
-    public List<Book> findByTitle(String title) {
-        return list("title", title);
+    public Optional<Book> findByTitle(String title) {
+        return find("title", title).firstResultOptional();
     }
 
-    public List<Book> findByPublicationYear(int year) {
-        return list("publicationYear", year);
+    public Optional<Book> findByPublicationYear(int year) {
+        return find("publicationYear", year).firstResultOptional();
     }
+
+    public Optional<Book> findByIsbn(String isbn) {
+        return find("isbn", isbn).firstResultOptional();
+    }
+
 }

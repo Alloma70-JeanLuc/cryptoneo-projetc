@@ -11,9 +11,32 @@ public class Library extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public String name;
     public String address;
 
     @ManyToOne
     public City city;
+
+    public Library(){}
+
+    public Library(String name, String adds, City city){
+        this.address = adds;
+        this.city = city;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
 }
+

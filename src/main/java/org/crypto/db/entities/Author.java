@@ -1,13 +1,10 @@
 package org.crypto.db.entities;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "authors")
+@DiscriminatorValue("AUTHOR")
 public class Author extends Person {
 
     @ManyToOne

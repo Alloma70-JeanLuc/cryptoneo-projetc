@@ -5,7 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@DiscriminatorValue("MEMBER")
-public class Member extends Person {
-    public String membershipNumber;
+@DiscriminatorValue("LIBRARIAN")
+public class Librarian extends Person{
+
+
 }

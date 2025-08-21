@@ -1,7 +1,5 @@
-org/crypto/resource/auth/AuthResource$LoginRequest.class
+org/crypto/db/repositories/PersonRepository.class
+org/crypto/db/entities/Account.class
 org/crypto/db/entities/Permission.class
 org/crypto/db/repositories/AccountRepository.class
-org/crypto/resource/auth/AuthResource$1.class
-org/crypto/db/entities/Account.class
 org/crypto/db/entities/Role.class
-org/crypto/resource/auth/AuthResource.class

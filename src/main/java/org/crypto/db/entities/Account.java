@@ -21,9 +21,11 @@ public class Account extends PanacheEntityBase {
     @ManyToOne
     public Role role;
 
-    @ManyToOne
-    public Member member;
+    @OneToOne // Un compte est lié à une seule personne
+    @JoinColumn(name = "person_id") // Clé étrangère dans la table 'accounts'
+    public Person person;
 
     public Instant createdAt = Instant.now();
     public boolean active = true;
 }
+

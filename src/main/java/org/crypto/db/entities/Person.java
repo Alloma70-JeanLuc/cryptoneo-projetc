@@ -4,7 +4,10 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.Instant;
 
-@MappedSuperclass // Indique que c'est une classe de base et que ses champs doivent être persistés dans les sous-classes.
+@Entity
+@Table(name = "persons")  // table unique pour toute la hiérarchie
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
 public class Person extends PanacheEntityBase {
 
     @Id
