@@ -4,7 +4,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
-
-    <include file="db/migration/v1.0.0-initial-schema.sql" relativeToChangelogFile="false"/>
-
+    <include file="migration/v1.0.0-create-initial-schema.sql" relativeToChangelogFile="true"/>
+    <include file="migration/20250824-01-add-unique-constraints.sql" relativeToChangelogFile="true"/>
+    <include file="migration/20250824-03-create-books-sequence.sql" relativeToChangelogFile="true"/>
+    <include file="migration/20250824-02-add-foreign-keys.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

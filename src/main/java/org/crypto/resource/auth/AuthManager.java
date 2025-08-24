@@ -10,13 +10,12 @@ import jakarta.ws.rs.core.Response;
 // Importer toutes les entités et repositories nécessaires de manière explicite
 import org.crypto.core.features.ApiResponse;
 import org.crypto.db.entities.*;
-import org.crypto.db.entities.Library;
 import org.crypto.db.repositories.*;
-import org.crypto.db.repositories.LibraryRepository;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.HashSet;
+import java.time.Instant;
 import java.util.Map;
+import java.util.Set;
 
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,10 +24,7 @@ public class AuthManager {
 
     @Inject AccountRepository accountRepo;
     @Inject RoleRepository roleRepo;
-    @Inject MemberRepository memberRepo;
-    @Inject AuthorRepository authorRepo;
-    @Inject
-    LibrarianRepository librarianRepo; // <-- CORRECTION: Injection du bon repository
+
 
     public static class LoginRequest {
         public String email;
@@ -40,7 +36,6 @@ public class AuthManager {
         public String lastName;
         public String email;
         public String password;
-        public String roleName; // Obligatoire pour savoir quel type de personne créer
     }
 
     @POST
@@ -55,124 +50,77 @@ public class AuthManager {
                     .build();
         }
 
-        // 2. Déterminer le rôle
-        String roleName = (request.roleName != null && !request.roleName.isEmpty()) ? request.roleName.toUpperCase() : "MEMBER";
-        Role role = roleRepo.findByName(roleName);
+        // 2. Rôle par défaut : USER
+        Role role = roleRepo.findByName("USER");
         if (role == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(ApiResponse.error("Role '" + roleName + "' not found."))
-                    .build();
-        }
-
-        // 3. Créer la Personne en fonction du rôle (LOGIQUE CORRIGÉE)
-        Person newPerson;
-        try {
-            switch (roleName) {
-                case "AUTHOR":
-                    Author author = new Author();
-                    author.firstName = request.firstName;
-                    author.lastName = request.lastName;
-                    author.email = request.email;
-                    authorRepo.persist(author);
-                    newPerson = author;
-                    break;
-
-                case "LIBRARIAN":
-                    // <-- CORRECTION MAJEURE: On crée un Librarian (personne) et non une Library (lieu)
-                    Librarian librarian = new Librarian();
-                    librarian.firstName = request.firstName;
-                    librarian.lastName = request.lastName;
-                    librarian.email = request.email;
-                    librarianRepo.persist(librarian); // On utilise le bon repository
-                    newPerson = librarian;
-                    break;
-
-                case "MEMBER":
-                default:
-                    Member member = new Member();
-                    member.firstName = request.firstName;
-                    member.lastName = request.lastName;
-                    member.email = request.email;
-                    memberRepo.persist(member);
-                    newPerson = member;
-                    break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(ApiResponse.error("An error occurred while creating the user profile."))
+                    .entity(ApiResponse.error("Default role USER not found."))
                     .build();
         }
 
+        // 3. Créer la Person
+        Person newPerson = new Person();
+        newPerson.firstName = request.firstName;
+        newPerson.lastName = request.lastName;
+        newPerson.email = request.email;
+        newPerson.isActive = true;
+        newPerson.createdAt = Instant.now();
+        newPerson.type = "Person";
+        newPerson.persist();
 
         // 4. Hasher le mot de passe
         String hashedPassword = BCrypt.hashpw(request.password, BCrypt.gensalt());
 
-        // 5. Créer le Compte et l'associer à la Personne et au Rôle
+        // 5. Créer le compte
         Account account = new Account();
         account.email = request.email;
         account.password = hashedPassword;
         account.role = role;
-        account.person = newPerson; // Liaison générique à la personne créée
-
+        account.person = newPerson;
+        account.isActive = true;
+        account.createdAt = Instant.now();
         accountRepo.persist(account);
 
         return Response.status(Response.Status.CREATED)
-                .entity(ApiResponse.success(null, "Account created successfully as " + roleName))
+                .entity(ApiResponse.success(null, "Account created successfully as USER"))
                 .build();
     }
+
 
     @POST
     @Path("/login")
     @Transactional
     public Response login(LoginRequest request) {
-        ApiResponse<Object> response = new ApiResponse<>();
 
-        try {
-            // 1. Vérifier si l'account existe
-            Account account = accountRepo.findByEmail(request.email);
-            if (account == null) {
-                return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(ApiResponse.error("Invalid email or password"))
-                        .build();
-            }
-
-            // 2. Vérifier le mot de passe
-            if (!BCrypt.checkpw(request.password, account.password)) {
-                return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(ApiResponse.error("Invalid email or password"))
-                        .build();
-            }
-
-            // 3. Générer le token JWT
-            String token = Jwt.issuer("crypto-app") // ⚡ tu peux configurer ça dans application.properties
-                    .upn(account.email) // "principal name"
-                    .groups(account.role.name) // rôle(s)
-                    .claim("id", account.id) // id du compte
-                    .claim("personId", account.person.id) // id de la personne associée
-                    .claim("role", account.role.name) // rôle explicite
-                    .sign();
-
-            // 4. Réponse avec token + infos
-            Map<String, Object> data = Map.of(
-                    "token", token,
-                    "email", account.email,
-                    "role", account.role.name,
-                    "person", Map.of(
-                            "id", account.person.id,
-                            "firstName", account.person.firstName,
-                            "lastName", account.person.lastName
-                    )
-            );
-
-            return Response.ok(ApiResponse.success(data, "Login successful")).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(ApiResponse.error("Login failed: " + e.getMessage()))
+        // 1. Vérifier si l'email existe
+        Account account = accountRepo.findByEmail(request.email);
+        if (account == null || !account.isActive) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ApiResponse.error("Invalid credentials"))
                     .build();
         }
-    }
 
+        // 2. Vérifier le mot de passe
+        if (!BCrypt.checkpw(request.password, account.password)) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(ApiResponse.error("Invalid credentials"))
+                    .build();
+        }
+
+        String token = Jwt.issuer("crypto-api")
+                .upn(account.email)
+                .groups(Set.of(account.role.name)) // Utilisez .groups() qui attend un Set de chaînes
+                .expiresIn(3600)
+                .sign();
+
+        // 4. Retourner le token et quelques infos utiles
+        Map<String, Object> response = Map.of(
+                "token", token,
+                "email", account.email,
+                "role", account.role.name,
+                "personId", account.person.id
+        );
+
+        return Response.ok(ApiResponse.success(response, "Login successful")).build();
+    }
 }

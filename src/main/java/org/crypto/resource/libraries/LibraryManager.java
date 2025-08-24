@@ -9,8 +9,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.crypto.core.crud.CrudEndPointImpl;
-import org.crypto.core.features.ApiResponse;
-import org.crypto.db.entities.Librarian;
 import org.crypto.db.entities.Library;
 import org.crypto.db.repositories.LibraryRepository;
 

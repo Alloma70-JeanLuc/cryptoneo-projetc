@@ -1,37 +1,10 @@
-# =======================================
-# Configuration de l'Application Quarkus (Crypto)
-# =======================================
+# Greeting
+greeting:
+  message: hello
 
+# Quarkus Native Resources
 quarkus:
-  application:
-    name: project-crypto
-    version: 1.0.0-SNAPSHOT
-
-  http:
-    host: 0.0.0.0
-    port: 8080
-
-  datasource:
-    db-kind: postgresql
-    username: postgres
-    password: alloma
-    jdbc:
-      url: jdbc:postgresql://localhost:5432/cryptodb
-
-  hibernate-orm:
-    database:
-      generation: update   # ⚡ Création/MAJ automatique des tables
-    log:
-      sql: true           # pour voir le SQL généré (optionnel)
-
-  liquibase:
-    migrate-at-start: false
-    change-log: db/changelog.xml
-    baseline-on-migrate: true
-
-  jvm:
-    args: "--add-opens=java.base/java.lang=ALL-UNNAMED"
-
+  # Mailer Configuration
   mailer:
     from: support@crypto.com
     host: smtp.hostinger.com
@@ -40,17 +13,37 @@ quarkus:
     mock: false
     port: 587
 
+  native:
+    resources:
+      includes: META-INF/resources/publicKey.pem
+
+  # Swagger UI
   swagger-ui:
     path: /documentation
     always-include: true
     theme: outline
     title: CRYPTO API
-    footer: "2025 . CRYPTO"
+    footer: 2025 . CRYPTO
     enable: true
 
+  # Disable Dev Services
   devservices:
     enabled: false
 
+  # Datasource (PostgreSQL)
+  datasource:
+    db-kind: postgresql
+    username: postgres
+    password: alloma
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/cryptodb
+
+  # HTTP Configuration
+  http:
+    host: 0.0.0.0
+    port: 8080
+
+  # Kubernetes Configuration
   kubernetes:
     part-of: crypto-k8s
     image-pull-policy: never
@@ -61,35 +54,40 @@ quarkus:
       task-pv-storage:
         claim-name: task-pv-claim
     mounts:
-      taskpvstorage:
+      task-pv-storage:
         path: /home/dev1/crypto/jar
 
+  # Container Image
   container-image:
     registry: ""
     group: ""
     name: crypto-k8s
     tag: 1.0
 
-# Greeting
-greeting:
-  message: hello
+  # Liquibase Configuration
+  liquibase:
+    migrate-at-start: true
+    change-log: db/changelog.xml
+    baseline-on-migrate: true
 
+# JVM Arguments
+jvm:
+  args: "--add-opens=java.base/java.lang=ALL-UNNAMED"
+
+# JWT Verification
 mp:
   jwt:
     verify:
-      issuer: crypto-app
+      issuer: crypto-api
       publickey:
         location: classpath:publicKey.pem
 
+# JWT Signing Key
 smallrye:
   jwt:
     sign:
       key:
         location: classpath:privateKey.pem
-
-
-
-
 
 # Upload Directories
 upload:
